@@ -1,24 +1,23 @@
-# hypercore-byte-stream
-[![Build Status](https://travis-ci.com/andrewosh/hypercore-byte-stream.svg?branch=master)](https://travis-ci.com/andrewosh/hypercore-byte-stream)
+# unichain-byte-stream
 
-A Readable stream wrapper around Hypercore that supports reading byte ranges.
+A Readable stream wrapper around Unichain that supports reading byte ranges.
 
 When provided with optional start/end block heuristics, this module will efficiently sync only those blocks which contain the specified range.
 
 Supports asynchronously specifying stream options, as well as the input feed, to remove the need for additional stream management modules like `duplexify`.
 
-Most of the code has been extracted from [Hyperdrive](https://github.com/mafintosh/hyperdrive).
+Most of the code has been extracted from [Bitdrive](https://github.com/bitwebs/bitdrive).
 
 ## Usage
 The following example will return a byte stream of the entire input feed.
 ```js
 const ram = require('random-access-memory')
-const hypercore = require('hypercore')
-const createByteStream = require('hypercore-byte-stream')
+const unichain = require('@web4/unichain')
+const createByteStream = require('@web4/unichain-byte-stream')
 
-let core = hypercore(ram)
+let chain = unichain(ram)
 let stream = createByteStream({
-  feed: core
+  feed: chain
 })
 ```
 
@@ -29,7 +28,7 @@ Creates a new byte stream.
 If specified, options can include:
 ```js
 {
-  feed: core, // A hypercore.
+  feed: chain, // A unichain.
   byteOffset: 0, // Starting offset in bytes from the start of the feed.
   byteLength: 10, // The number of bytes to read.
   blockOffset: 0, // An optional starting block heuristic (optimization).

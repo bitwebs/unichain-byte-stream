@@ -1,10 +1,10 @@
 const ram = require('random-access-memory')
-const hypercore = require('hypercore')
+const unichain = require('@web4/unichain')
 
 const createStream = require('../..')
 
 function createLocal (numRecords, recordSize, cb) {
-  const core = hypercore(ram)
+  const chain = unichain(ram)
 
   const records = []
   for (let i = 0; i < numRecords; i++) {
@@ -12,15 +12,15 @@ function createLocal (numRecords, recordSize, cb) {
     records.push(record)
   }
 
-  core.append(records, err => {
+  chain.append(records, err => {
     if (err) return cb(err)
     const stream = createStream()
-    return cb(null, core, core, stream, records)
+    return cb(null, chain, chain, stream, records)
   })
 }
 
 function createRemote (numRecords, recordSize, cb) {
-  const core1 = hypercore(ram, { sparse: true })
+  const chain1 = unichain(ram, { sparse: true })
 
   const records = []
   for (let i = 0; i < numRecords; i++) {
@@ -28,16 +28,16 @@ function createRemote (numRecords, recordSize, cb) {
     records.push(record)
   }
 
-  core1.append(records, err => {
+  chain1.append(records, err => {
     if (err) return cb(err)
 
-    const core2 = hypercore(ram, core1.key, { sparse: true })
+    const chain2 = unichain(ram, chain1.key, { sparse: true })
 
-    const s1 = core1.replicate(true, { live: true })
-    s1.pipe(core2.replicate(false, { live: true })).pipe(s1)
+    const s1 = chain1.replicate(true, { live: true })
+    s1.pipe(chain2.replicate(false, { live: true })).pipe(s1)
 
     const stream = createStream()
-    return cb(null, core1, core2, stream, records)
+    return cb(null, chain1, chain2, stream, records)
   })
 }
 
